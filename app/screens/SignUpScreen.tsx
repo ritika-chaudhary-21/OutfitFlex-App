@@ -9,6 +9,11 @@ import {
   ScrollView,
 } from 'react-native';
 import AvatarPicker from '../components/AvatarPicker';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../navigation/types';
+
+type SignUpScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'SignUp'>;
 
 const categories = {
   bodyTypes: ['Straight', 'Curvy', 'Athletic', 'Other'],
@@ -18,16 +23,16 @@ const categories = {
 };
 
 const SignUpScreen = () => {
+  const navigation = useNavigation<SignUpScreenNavigationProp>();
+
   const [nickname, setNickname] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-
   const [bodyType, setBodyType] = useState('');
   const [fitPref, setFitPref] = useState('');
   const [stylePref, setStylePref] = useState('');
   const [occasion, setOccasion] = useState('');
   const [selectedAvatar, setSelectedAvatar] = useState<number | null>(null);
-
 
   const handleSignUp = () => {
     const userData = {
@@ -40,8 +45,10 @@ const SignUpScreen = () => {
       occasion,
       avatar: selectedAvatar,
     };
+
     console.log('Signing up with:', userData);
-    // Later: send data to backend
+
+    navigation.navigate('Main');
   };
 
   const renderOptions = (options: string[], selected: string, setSelected: (val: string) => void) => {
