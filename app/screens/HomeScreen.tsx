@@ -6,146 +6,142 @@ import {
   StyleSheet,
   ScrollView,
   TouchableOpacity,
-  Image,
+  Image
 } from 'react-native';
-import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 
-const wardrobeCategories = [
-  { name: 'Topwear', icon: require('../../assets/icons/top.png') },
-  { name: 'Bottomwear', icon: require('../../assets/icons/bottom.png') },
-  { name: 'Dresses', icon: require('../../assets/icons/dress.png') },
-  { name: 'Footwear', icon: require('../../assets/icons/shoe.png') },
-];
+const categories = ['Tops', 'Bottoms', 'Dresses', 'Jackets', 'Accessories'];
 
-const recommendations = [
-  { top: require('../../assets/dummy/top1.jpg'), bottom: require('../../assets/dummy/bottom1.jpg') },
-  { top: require('../../assets/dummy/top2.jpeg'), bottom: require('../../assets/dummy/bottom2.jpg') },
-];
-
-const inspirations = [
-  require('../../assets/outfits/1.jpg'),
-  require('../../assets/outfits/2.jpg'),
-  require('../../assets/outfits/3.jpg'),
+const recentOutfits = [
+  {
+    id: '1',
+    name: 'Summer Casual',
+    items: [
+      { id: '101', image: require('../../assets/dummy/top1.jpg') },
+      { id: '102', image: require('../../assets/dummy/bottom1.jpg') }
+    ]
+  },
+  {
+    id: '2',
+    name: 'Office Look',
+    items: [
+      { id: '201', image: require('../../assets/dummy/top2.jpeg') },
+      { id: '202', image: require('../../assets/dummy/bottom2.jpg') }
+    ]
+  }
 ];
 
 const HomeScreen = ({ navigation }: any) => {
   return (
     <ScrollView style={styles.container}>
-      <Text style={styles.header}>👤 Home</Text>
-
-      <Text style={styles.sectionTitle}>Your Wardrobe</Text>
-      <View style={styles.wardrobeRow}>
-        {wardrobeCategories.map((item) => (
-          <TouchableOpacity
-            key={item.name}
-            style={styles.iconButton}
-            onPress={() => navigation.navigate('Wardrobe', { category: item.name })}
-          >
-            <Image source={item.icon} style={styles.iconImage} />
-            <Text style={styles.iconText}>{item.name}</Text>
-          </TouchableOpacity>
-        ))}
-        <TouchableOpacity onPress={() => navigation.navigate('Wardrobe')}>
-          <Text style={styles.viewAll}>View All →</Text>
+      {/* Header */}
+      <View style={styles.header}>
+        <Text style={styles.title}>OutfitFlex</Text>
+        <TouchableOpacity style={styles.addItemBtn}>
+          <Text style={styles.addItemText}>+ Add Item</Text>
         </TouchableOpacity>
       </View>
 
-      <Text style={styles.sectionTitle}>Today’s Outfit Recommendation</Text>
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.recommendationRow}>
-        {recommendations.map((combo, index) => (
-          <View key={index} style={styles.outfitCard}>
-            <Image source={combo.top} style={styles.outfitImage} />
-            <Image source={combo.bottom} style={styles.outfitImage} />
-            <View style={styles.outfitButtons}>
-              <TouchableOpacity><Ionicons name="checkmark-circle" size={28} color="green" /></TouchableOpacity>
-              <TouchableOpacity><Ionicons name="close-circle" size={28} color="red" /></TouchableOpacity>
-            </View>
+      {/* CTA Gradient Card */}
+      <View style={styles.gradientCard}>
+        <Text style={styles.gradientTitle}>Create Your Next Look</Text>
+        <Text style={styles.gradientText}>Mix and match items from your wardrobe</Text>
+        <TouchableOpacity style={styles.createBtn}>
+          <Text style={styles.createBtnText}>Create Outfit</Text>
+        </TouchableOpacity>
+      </View>
+
+      {/* Categories */}
+      <Text style={styles.sectionTitle}>Categories</Text>
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.categoryScroll}>
+        {categories.map((cat) => (
+          <View key={cat} style={styles.categoryChip}>
+            <Text style={styles.categoryText}>{cat}</Text>
           </View>
         ))}
       </ScrollView>
 
-      <Text style={styles.sectionTitle}>Style Inspirations</Text>
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.inspoRow}>
-        {inspirations.map((img, index) => (
-          <Image key={index} source={img} style={styles.inspoImage} />
+      {/* Recent Outfits */}
+      <Text style={styles.sectionTitle}>Recent Outfits</Text>
+      <View style={styles.outfitGrid}>
+        {recentOutfits.map((outfit) => (
+          <View key={outfit.id} style={styles.outfitCard}>
+            <Text style={styles.outfitName}>{outfit.name}</Text>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+              {outfit.items.map((item) => (
+                <Image key={item.id} source={item.image} style={styles.outfitImage} />
+              ))}
+            </ScrollView>
+          </View>
         ))}
-      </ScrollView>
+      </View>
     </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    paddingTop: 60,
-    paddingHorizontal: 20,
-    backgroundColor: '#F3E8FF',
-  },
+  container: { flex: 1, backgroundColor: '#fff' },
   header: {
-    fontSize: 26,
-    fontWeight: 'bold',
-    marginBottom: 20,
-    color: '#4B0082',
-  },
-  sectionTitle: {
-    fontSize: 20,
-    fontWeight: '600',
-    marginVertical: 12,
-  },
-  wardrobeRow: {
     flexDirection: 'row',
-    flexWrap: 'wrap',
-    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginTop: 24,
+    padding: 16,
+    alignItems: 'center'
   },
-  iconButton: {
-    alignItems: 'center',
-    marginRight: 20,
-    marginBottom: 12,
+  title: { fontSize: 24, fontWeight: 'bold', color: '#44317f' },
+  addItemBtn: {
+    backgroundColor: '#f0f0f0',
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderRadius: 8
   },
-  iconText: {
-    marginTop: 4,
-    fontSize: 12,
-  },
-  iconImage: {
-    width: 40,
-    height: 40,
-    marginBottom: 4,
-  },
-  viewAll: {
-    color: '#6C63FF',
-    marginTop: 12,
-  },
-  recommendationRow: {
-    marginVertical: 12,
-  },
-  outfitCard: {
-    backgroundColor: '#fff',
+  addItemText: { fontSize: 14, fontWeight: '600', color: '#333' },
+  gradientCard: {
+    backgroundColor: '#e5d4ff',
+    margin: 16,
     borderRadius: 12,
-    padding: 10,
-    marginRight: 12,
-    alignItems: 'center',
-    width: 140,
+    padding: 20
   },
+  gradientTitle: { fontSize: 18, fontWeight: 'bold', marginBottom: 6, color: '#44317f' },
+  gradientText: { fontSize: 14, color: '#44317f', marginBottom: 10 },
+  createBtn: {
+    backgroundColor: '#fff',
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+    alignSelf: 'flex-start'
+  },
+  createBtnText: { color: '#44317f', fontWeight: '600' },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    marginTop: 20,
+    marginLeft: 16,
+    marginBottom: 8,
+    color: '#44317f'
+  },
+  categoryScroll: { paddingLeft: 16 },
+  categoryChip: {
+    backgroundColor: '#f3f0ff',
+    borderRadius: 20,
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    marginRight: 10
+  },
+  categoryText: { color: '#44317f', fontWeight: '500' },
+  outfitGrid: { padding: 16 },
+  outfitCard: {
+    backgroundColor: '#f9f9f9',
+    borderRadius: 12,
+    padding: 12,
+    marginBottom: 16
+  },
+  outfitName: { fontWeight: '600', marginBottom: 8, color: '#333' },
   outfitImage: {
     width: 80,
     height: 80,
-    resizeMode: 'contain',
-    marginBottom: 6,
-  },
-  outfitButtons: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    width: '80%',
-  },
-  inspoRow: {
-    flexDirection: 'row',
-    marginTop: 12,
-  },
-  inspoImage: {
-    width: 100,
-    height: 100,
-    borderRadius: 12,
-    marginRight: 10,
-  },
+    borderRadius: 10,
+    marginRight: 10
+  }
 });
 
 export default HomeScreen;
