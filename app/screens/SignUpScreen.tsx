@@ -8,7 +8,6 @@ import {
   StyleSheet,
   ScrollView,
 } from 'react-native';
-import AvatarPicker from '../components/AvatarPicker';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation/types';
@@ -16,10 +15,13 @@ import { RootStackParamList } from '../navigation/types';
 type SignUpScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'SignUp'>;
 
 const categories = {
-  bodyTypes: ['Straight', 'Curvy', 'Athletic', 'Other'],
-  fitPrefs: ['Loose', 'Tight', 'Regular'],
-  stylePrefs: ['Minimal', 'Chic', 'Playful', 'Edgy'],
-  occasions: ['Casual', 'Formal', 'Party', 'Vacation'],
+  gender: ['Male', 'Female', 'Non-Binary', 'Prefer not to say'],
+  bodyTypes: ['Rectangle', 'Hourglass', 'Pear', 'Apple'],
+  fitPrefs: ['Tight / Fitted', 'Regular / Standard', 'Loose / Relaxed', 'Oversized'],
+  stylePrefs: [
+    'Casual', 'Formal', 'Streetwear', 'Minimalist',
+    'Vintage', 'Bohemian', 'Athletic', 'Business'
+  ],
 };
 
 const SignUpScreen = () => {
@@ -28,49 +30,77 @@ const SignUpScreen = () => {
   const [nickname, setNickname] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [gender, setGender] = useState('');
   const [bodyType, setBodyType] = useState('');
   const [fitPref, setFitPref] = useState('');
-  const [stylePref, setStylePref] = useState('');
-  const [occasion, setOccasion] = useState('');
-  const [selectedAvatar, setSelectedAvatar] = useState<number | null>(null);
+  const [stylePrefs, setStylePrefs] = useState<string[]>([]);
+
+  const toggleStylePref = (pref: string) => {
+    setStylePrefs((prev) =>
+      prev.includes(pref) ? prev.filter(p => p !== pref) : [...prev, pref]
+    );
+  };
 
   const handleSignUp = () => {
     const userData = {
       nickname,
       email,
       password,
+      gender,
       bodyType,
       fitPref,
-      stylePref,
-      occasion,
-      avatar: selectedAvatar,
+      stylePrefs,
     };
-
     console.log('Signing up with:', userData);
-
     navigation.navigate('Main');
   };
 
-  const renderOptions = (options: string[], selected: string, setSelected: (val: string) => void) => {
-    return (
-      <View style={styles.optionContainer}>
-        {options.map((option) => (
-          <TouchableOpacity
-            key={option}
-            style={[
-              styles.optionButton,
-              selected === option && styles.optionSelected,
-            ]}
-            onPress={() => setSelected(option)}
+  const renderOptions = (
+    options: string[],
+    selected: string,
+    setSelected: (val: string) => void
+  ) => (
+    <View style={styles.optionContainer}>
+      {options.map((option) => (
+        <TouchableOpacity
+          key={option}
+          style={[styles.optionButton, selected === option && styles.optionSelected]}
+          onPress={() => setSelected(option)}
+        >
+          <Text style={selected === option ? styles.optionSelectedText : styles.optionText}>
+            {option}
+          </Text>
+        </TouchableOpacity>
+      ))}
+    </View>
+  );
+
+  const renderMultiSelect = (
+    options: string[],
+    selectedList: string[],
+    toggleFn: (val: string) => void
+  ) => (
+    <View style={styles.optionContainer}>
+      {options.map((option) => (
+        <TouchableOpacity
+          key={option}
+          style={[
+            styles.optionButton,
+            selectedList.includes(option) && styles.optionSelected
+          ]}
+          onPress={() => toggleFn(option)}
+        >
+          <Text
+            style={
+              selectedList.includes(option) ? styles.optionSelectedText : styles.optionText
+            }
           >
-            <Text style={selected === option ? styles.optionSelectedText : styles.optionText}>
-              {option}
-            </Text>
-          </TouchableOpacity>
-        ))}
-      </View>
-    );
-  };
+            {option}
+          </Text>
+        </TouchableOpacity>
+      ))}
+    </View>
+  );
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -100,20 +130,18 @@ const SignUpScreen = () => {
         onChangeText={setPassword}
       />
 
+      <Text style={styles.label}>Gender</Text>
+      {renderOptions(categories.gender, gender, setGender)}
+
       <Text style={styles.label}>Body Type</Text>
       {renderOptions(categories.bodyTypes, bodyType, setBodyType)}
 
       <Text style={styles.label}>Clothing Fit Preference</Text>
       {renderOptions(categories.fitPrefs, fitPref, setFitPref)}
 
-      <Text style={styles.label}>Style Preference</Text>
-      {renderOptions(categories.stylePrefs, stylePref, setStylePref)}
+      <Text style={styles.label}>Style Preferences (you can choose multiple)</Text>
+      {renderMultiSelect(categories.stylePrefs, stylePrefs, toggleStylePref)}
 
-      <Text style={styles.label}>Occasion Focus</Text>
-      {renderOptions(categories.occasions, occasion, setOccasion)}
-
-      <Text style={styles.label}>Choose Your Avatar</Text>
-      <AvatarPicker selectedAvatar={selectedAvatar} onSelect={setSelectedAvatar} />
 
       <TouchableOpacity style={styles.button} onPress={handleSignUp}>
         <Text style={styles.buttonText}>Sign Up</Text>
